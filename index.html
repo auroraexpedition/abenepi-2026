@@ -6,6 +6,12 @@
 <meta name="theme-color" content="#14213d">
 <title>Minha grade ABENEPI 2026</title>
 <meta name="description" content="Monte sua grade pessoal de palestras do VIII Congresso Internacional e XXVIII Brasileiro da ABENEPI (Natal, 28 a 31 de outubro de 2026).">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ABENEPI 2026">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314213d'/%3E%3Cpath d='M18 34l10 10 18-20' fill='none' stroke='%23fca311' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -131,6 +137,14 @@ footer a{color:var(--navy2)}
 mark{background:#fff1b8;padding:0 1px;border-radius:2px}
 .brand h1 small{display:none}.hbtn span{display:none}.hbtn{padding:9px}
 
+.inst{display:none;align-items:flex-start;gap:12px;background:var(--navy);color:#fff;border-radius:16px;padding:14px 14px;margin:0 0 14px;position:relative;line-height:1.4}
+.inst.show{display:flex}
+.inst img{width:52px;height:52px;border-radius:12px;flex:none}
+.inst b{display:block;font-size:16px;margin-bottom:3px}
+.inst p{margin:0;font-size:14.5px;color:rgba(255,255,255,.88)}
+.inst p em{font-style:normal;background:rgba(255,255,255,.14);padding:1px 6px;border-radius:6px;white-space:nowrap}
+.inst .x{position:absolute;top:6px;right:6px;border:0;background:transparent;color:#fff;font-size:22px;padding:4px 8px;opacity:.7}
+.inst .go{margin-top:8px;display:inline-block;background:var(--amber);color:var(--navy);font-weight:800;border:0;border-radius:999px;padding:8px 14px;font-size:15px}
 /* Markoo ad */
 .ad{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 14px;text-decoration:none;color:var(--ink);box-shadow:0 1px 2px rgba(20,33,61,.04);position:relative;overflow:hidden}
 .ad:active{transform:scale(.995)}
@@ -144,7 +158,7 @@ mark{background:#fff1b8;padding:0 1px;border-radius:2px}
 .ad .ig svg{width:14px;height:14px}
 .ad .tag{position:absolute;top:0;right:0;font-size:10px;letter-spacing:.6px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:0 0 0 8px}
 @media print{
-  header,.tools,.ag-tools,.btn,.rm,footer,.toast,.ad{display:none!important}
+  header,.tools,.ag-tools,.btn,.rm,footer,.toast,.ad,.inst{display:none!important}
   main{padding:0;max-width:none}
   body{background:#fff}
   .ag .body{border-color:#bbb}
@@ -180,6 +194,7 @@ mark{background:#fff1b8;padding:0 1px;border-radius:2px}
   </div>
 </div>
 
+<div class="inst" id="inst"><img src="apple-touch-icon.png" alt=""><div><b>Salve como app na tela de início</b><p id="instTxt"></p><button class="go" id="instGo" style="display:none">Instalar</button></div><button class="x" id="instX" aria-label="Fechar">×</button></div>
 <main id="main"></main>
 
 <footer>
@@ -389,6 +404,31 @@ document.getElementById('btnShare').onclick=async()=>{
   if(navigator.share){ try{ await navigator.share({title:'Minha agenda ABENEPI 2026', text}); return; }catch(e){} }
   copy(text);
 };
+// ---- instalação na tela de início ----
+(function(){
+  const KI='abenepi2026.instHide';
+  const el=document.getElementById('inst'), tx=document.getElementById('instTxt'), go=document.getElementById('instGo');
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+  if(standalone || localStorage.getItem(KI)==='1') return;
+  const ua=navigator.userAgent||'';
+  const ios=/iPhone|iPad|iPod/i.test(ua);
+  const inApp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|Twitter/i.test(ua) || (ios && !/Safari/i.test(ua));
+  let deferred=null;
+  window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; go.style.display='inline-block'; tx.innerHTML='Toque em <em>Instalar</em> para abrir como app, com ícone na tela de início.'; el.classList.add('show'); });
+  go.onclick=async()=>{ if(!deferred) return; deferred.prompt(); const r=await deferred.userChoice; if(r.outcome==='accepted'){ el.classList.remove('show'); localStorage.setItem(KI,'1'); } };
+  if(ios){
+    tx.innerHTML = inApp
+      ? 'Abra este link no <em>Safari</em> (toque nos três pontinhos e escolha “Abrir no Safari”). Depois toque em <em>Compartilhar</em> e em <em>Adicionar à Tela de Início</em>.'
+      : 'No Safari, toque em <em>Compartilhar</em> (quadrado com seta) e depois em <em>Adicionar à Tela de Início</em>.';
+    el.classList.add('show');
+  } else if(/Android/i.test(ua)){
+    tx.innerHTML = inApp
+      ? 'Abra este link no <em>Chrome</em> (menu ⋮ e “Abrir no Chrome”). Depois toque no menu ⋮ e em <em>Adicionar à tela inicial</em>.'
+      : 'No Chrome, toque no menu <em>⋮</em> e em <em>Adicionar à tela inicial</em> (ou “Instalar app”).';
+    el.classList.add('show');
+  }
+  document.getElementById('instX').onclick=()=>{ el.classList.remove('show'); localStorage.setItem(KI,'1'); };
+})();
 render();
 })();
 </script>

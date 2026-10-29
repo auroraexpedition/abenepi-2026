@@ -1,0 +1,16 @@
+{
+  "name": "Minha grade ABENEPI 2026",
+  "short_name": "ABENEPI 2026",
+  "description": "Monte sua grade pessoal de palestras do Congresso ABENEPI 2026 (Natal, 28 a 31 de outubro).",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14213d",
+  "theme_color": "#14213d",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
